@@ -1,10 +1,10 @@
-import {configuration} from './configuration.js'
+import { configuration } from './configuration.js'
 
 
-export class ConfigService{
+export class ConfigService {
     private readonly config = configuration();
 
-    get app(){
-        return this.config.app;
+    getConfig() {
+        return this.config;
     }
 }

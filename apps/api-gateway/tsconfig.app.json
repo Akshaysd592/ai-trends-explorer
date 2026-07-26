@@ -14,7 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "../../packages/logger/src/lib/app-logger.service.ts"],
   "exclude": [
     "out-tsc",
     "dist",
@@ -27,6 +27,9 @@
     "eslint.config.mjs"
   ],
   "references": [
+    {
+      "path": "../../packages/logger/tsconfig.lib.json"
+    },
     {
       "path": "../../packages/config/tsconfig.lib.json"
     }

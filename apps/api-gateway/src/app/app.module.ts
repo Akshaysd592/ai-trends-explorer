@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import {ConfigModule} from '@nestjs/config';
 import {envSchema} from '@ai-trend-explorer/config';
+import { AppLoggerService } from '../logger/app-logger.service';
 
 
 @Module({
@@ -10,9 +11,10 @@ import {envSchema} from '@ai-trend-explorer/config';
     ConfigModule.forRoot({
       isGlobal: true,
       validate: (env)=> envSchema.parse(env),
-    })
+    }),
+
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppLoggerService ],
 })
 export class AppModule {}
