@@ -2,5 +2,30 @@
   "extends": "./tsconfig.base.json",
   "compileOnSave": false,
   "files": [],
-  "references": []
+  "references": [
+    {
+      "path": "./web-e2e"
+    },
+    {
+      "path": "./web"
+    },
+    {
+      "path": "./apps/api-gateway-e2e"
+    },
+    {
+      "path": "./apps/api-gateway"
+    },
+    {
+      "path": "./packages/config"
+    },
+    {
+      "path": "./packages/logger"
+    },
+    {
+      "path": "./packages/shared-utils"
+    },
+    {
+      "path": "./packages/shared-types"
+    }
+  ]
 }

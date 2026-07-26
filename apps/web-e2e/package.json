@@ -1,0 +1,10 @@
+{
+  "name": "@ai-trend-explorer/web-e2e",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "implicitDependencies": [
+      "@ai-trend-explorer/web"
+    ]
+  }
+}
