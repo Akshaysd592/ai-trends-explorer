@@ -19,6 +19,9 @@
     "name": "config"
   },
   "dependencies": {
-    "tslib": "^2.3.0"
+    "@nestjs/config": "^4.0.4",
+    "dotenv": "^17.4.2",
+    "tslib": "^2.3.0",
+    "zod": "^4.4.3"
   }
 }
