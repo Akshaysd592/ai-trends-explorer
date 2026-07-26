@@ -9,6 +9,10 @@ export function configuration(){
             nodeEnv: env.NODE_ENV,
             port: env.PORT
         },
+        logger:{
+            level: env.LOG_LEVEL,
+            pretty: env.NODE_ENV !== 'production'
+        }
     };
 
 }
