@@ -7,6 +7,7 @@ export const envSchema = z.object({
     LOG_LEVEL: z
     .enum(["trace", "debug", "info", "warn", "error", "fatal"])
     .default("info"),
+    GITHUB_TOKEN: z.string().optional(),
 })
 
 export type EnvSchema = z.infer<typeof envSchema>;

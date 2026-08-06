@@ -5,6 +5,8 @@
   "dependencies": {
     "@ai-trend-explorer/config": "workspace:*",
     "@ai-trend-explorer/logger": "workspace:*",
+    "@ai-trend-explorer/shared-types": "workspace:*",
+    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",

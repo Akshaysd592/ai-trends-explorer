@@ -6,7 +6,14 @@ export class TrendController {
   constructor(private readonly trendService: TrendService) {}
 
   @Get()
-  getTrending() {
-    return this.trendService.getTrending();
+  async getTrending() {
+    // return this.trendService.getTrending();
+
+
+    return {
+      success: true,
+      data: await this.trendService.getTrending(),
+      timestamp: new Date().toISOString(),
+    }
   }
 }
