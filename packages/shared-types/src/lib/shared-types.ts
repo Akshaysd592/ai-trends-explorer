@@ -1,3 +1,7 @@
-export function sharedTypes(): string {
-  return 'shared-types';
+export interface Trend {
+  id: string;
+  title: string;
+  source: string;
+  score: number;
+  url: string;
 }
