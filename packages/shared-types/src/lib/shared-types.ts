@@ -1,10 +1,25 @@
-export interface Trend{
-   id: string;
+export interface Trend {
+  id: string;
+
   title: string;
-  description: string;
-  source: string;
-  score: number;
+
+  description?: string;
+
+  source: 'github' | 'huggingface' | 'producthunt';
+
   url: string;
-  stars: number;
-  language: string | null;
+
+  score: number;
+
+  language?: string | null;
+
+  stars?: number;
+
+  forks?: number;
+
+  topics?: string[];
+
+  createdAt?: string;
+
+  updatedAt?: string;
 }

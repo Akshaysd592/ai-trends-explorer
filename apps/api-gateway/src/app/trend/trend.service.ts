@@ -1,15 +1,16 @@
 
-import { GithubTrendProvider } from '../github/github.provider';
+import { TrendQuery } from '@ai-trend-explorer/shared-types';
+
 import { TrendAggregator } from './aggregator/trend.aggregator';
-import { MockTrendSource } from './sources/mock-trend.source';
+
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class TrendService {
   constructor( private readonly aggregator: TrendAggregator ){}
 
-  async getTrending() {
+  async getTrending(query: TrendQuery) {
     // return  this.trendService.getTrending();
-    return this.aggregator.getTrending();
+    return this.aggregator.getTrending(query);
   }
 }

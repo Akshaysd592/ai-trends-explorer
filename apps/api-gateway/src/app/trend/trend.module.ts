@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TrendService } from './trend.service';
 import { TrendController } from './trend.controller';
-import { GithubTrendProvider } from '../github/github.provider';
 import { MockTrendSource } from './sources/mock-trend.source';
 import { GithubModule } from '../github/github.module';
 import { TrendAggregator } from './aggregator/trend.aggregator';
+import { TrendProviderRegistry } from './aggregator/trend.registry';
 
 @Module({
-  providers: [TrendService, TrendAggregator,MockTrendSource ],
+  providers: [TrendService, TrendAggregator,MockTrendSource,TrendProviderRegistry ],
   controllers: [TrendController],
   imports: [GithubModule],
   

@@ -1,20 +1,23 @@
 import { envSchema } from "./env.schema.js";
 
 
-export function configuration(){
+export function configuration() {
     const env = envSchema.parse(process.env);
 
-    return{
-        app:{
+    return {
+        app: {
             nodeEnv: env.NODE_ENV,
             port: env.PORT
         },
-        logger:{
+        logger: {
             level: env.LOG_LEVEL,
             pretty: env.NODE_ENV !== 'production'
         },
-        github:{
+        github: {
+            apiUrl: env.GITHUB_API_URL,
             token: env.GITHUB_TOKEN,
+            defaultLimit: env.GITHUB_DEFAULT_LIMIT,
+            timeout: env.GITHUB_REQUEST_TIMEOUT,
         }
     };
 

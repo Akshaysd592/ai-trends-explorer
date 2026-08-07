@@ -1,14 +1,19 @@
 
 export interface GithubRepository {
     id: number;
-    name: string;
     full_name: string;
-    html_url: string;
     description: string | null;
-    stargazers_count: number;
+    html_url: string;
     language: string | null;
+    stargazers_count: number;
+    forks_count: number;
+    topics: string[];
+    created_at: string;
+    updated_at: string;
 }
 
 export interface GithubSearchResponse {
+    total_count: number;
+    incomplete_result: boolean;
     items: GithubRepository[];
 }
