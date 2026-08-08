@@ -14,6 +14,11 @@ export const envSchema = z.object({
   HUGGINGFACE_API_TOKEN: z.string().optional(),
   HUGGINGFACE_DEFAULT_LIMIT: z.coerce.number().default(20),
   HUGGINGFACE_REQUEST_TIMEOUT: z.coerce.number().default(10000),
+  DB_HOST: z.string().default('localhost'),
+  DB_PORT: z.coerce.number().default(5432),
+  DB_USERNAME: z.string(),
+  DB_PASSWORD: z.string(),
+  DB_NAME: z.string().default('ai_trend_explorer'),
 });
 
 export type EnvSchema = z.infer<typeof envSchema>;

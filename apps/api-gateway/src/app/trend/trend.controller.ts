@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Param, NotFoundException } from '@nestjs/common';
 import { TrendService } from './trend.service';
 
 @Controller('trends')
@@ -32,6 +32,19 @@ export class TrendController {
         page: isNaN(pageNum) ? 1 : pageNum,
         limit: isNaN(limitNum) ? 20 : limitNum,
       },
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Get(':id')
+  async getTrendById(@Param('id') id: string) {
+    const trend = await this.trendService.getTrendById(id);
+    if (!trend) {
+      throw new NotFoundException(`Trend with id "${id}" not found`);
+    }
+    return {
+      success: true,
+      data: trend,
       timestamp: new Date().toISOString(),
     };
   }
