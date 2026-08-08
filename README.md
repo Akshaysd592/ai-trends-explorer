@@ -1,49 +1,177 @@
-# AI Trend Explorer
+# 🚀 AI Trend Explorer
 
-Discover trending AI products from Product Hunt and Hugging Face using AI-powered analysis.
+Discover and explore trending AI tools, agents, and ML projects from GitHub and Hugging Face — aggregated, normalized, and ranked in one place.
 
-## Tech Stack
+> **What's trending in AI right now, and why does it matter?**
 
-- Next.js
-- NestJS
-- TypeScript
-- Nx
-- Drizzle ORM
-- PostgreSQL
-- Kafka
-- gRPC
-- GraphQL
-- Docker
-- Kubernetes
-- Helm
-- GitHub Actions
-- GCP
+---
 
-## Architecture
+## ✨ What It Does
 
-(architecture diagram)
+AI Trend Explorer aggregates trending AI projects from multiple developer platforms and presents them through a unified API:
 
-## Features
+- **GitHub** — trending AI repositories with stars, forks, languages, and topics
+- **Hugging Face** — trending AI models and ML projects with likes, downloads, and pipeline tags
 
-- Trending AI products
-- AI-powered summaries
-- Search
-- Authentication
-- Real-time updates
-- GraphQL API
-- Event-driven architecture
+Results are normalized into a common `Trend` model, deduplicated, and returned with per-source status tracking.
 
-## Project Structure
+### Example API Response
 
-apps/
-packages/
-infra/
-docs/
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "365739812",
+      "title": "tldraw/tldraw",
+      "description": "Build infinite canvas apps in React with the tldraw SDK.",
+      "source": "github",
+      "url": "https://github.com/tldraw/tldraw",
+      "language": "TypeScript",
+      "stars": 49664,
+      "forks": 3446,
+      "score": 49664,
+      "topics": ["canvas", "collaboration", "design", "diagram", "drawing", "infinite", "multiplayer", "react", "sdk", "sketch", "sync", "whiteboard"],
+      "createdAt": "2021-05-09T11:48:37Z",
+      "updatedAt": "2026-08-08T10:24:34Z"
+    }
+  ],
+  "sources": {
+    "github": { "status": "ok" },
+    "huggingface": { "status": "ok" }
+  },
+  "pagination": { "page": 1, "limit": 10 },
+  "timestamp": "2026-08-08T10:25:15.787Z"
+}
+```
 
-## Local Development
+---
 
-...
+## 🏗️ Architecture
 
-## Deployment
+A monorepo built with [Nx](https://nx.dev) and [pnpm](https://pnpm.io):
 
-...
+```
+ai-trend-explorer/
+├── apps/
+│   ├── web/              # Next.js frontend (coming soon)
+│   └── api-gateway/      # NestJS API gateway
+├── packages/
+│   ├── config/           # Environment configuration
+│   ├── logger/           # Structured logging
+│   ├── shared-types/     # Canonical Trend model & interfaces
+│   └── shared-utils/     # Shared utilities
+```
+
+### Data Flow
+
+```
+GitHub API ──┐
+             │
+HuggingFace ─┤
+             ▼
+   Trend Provider Registry
+             │
+             ▼
+      Trend Aggregation
+             │
+             ▼
+        API Gateway
+             │
+             ▼
+         Next.js UI
+```
+
+Each data source implements a common `TrendProvider` interface, ensuring consistent querying and response normalization across all sources.
+
+---
+
+## 🚀 API
+
+### Get Trends
+
+```
+GET /trends
+```
+
+| Parameter  | Type   | Default                  | Description                          |
+| ---------- | ------ | ------------------------ | ------------------------------------ |
+| `page`     | number | `1`                      | Page number for pagination           |
+| `limit`    | number | `20`                     | Results per page (1–100)             |
+| `topic`    | string | `artificial-intelligence`| Search topic                         |
+| `language` | string | _(none)_                 | Filter by programming language       |
+| `sort`     | string | `stars`                  | Sort by `stars` or `updated`         |
+
+```bash
+curl "http://localhost:3000/trends?page=1&limit=10&topic=artificial-intelligence&sort=stars"
+```
+
+### Health Check
+
+```
+GET /health
+```
+
+---
+
+## 🛠️ Local Development
+
+### Prerequisites
+
+- Node.js 22+
+- pnpm
+- Docker (for PostgreSQL, Redis, Kafka — future phases)
+
+### Setup
+
+```bash
+# Install dependencies
+pnpm install
+
+# Configure environment
+# Create a .env file with your GitHub and Hugging Face API tokens
+# See .env for reference
+
+# Start the API gateway
+cd apps/api-gateway
+pnpm start:dev
+```
+
+The API will be available at `http://localhost:3000`.
+
+### Testing
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests for the API gateway
+cd apps/api-gateway
+npx jest --config jest.config.cts
+```
+
+---
+
+## 🗺️ Roadmap
+
+| Phase | Feature              | Status     |
+| ----- | -------------------- | ---------- |
+| 1     | Foundation           | ✅ Complete |
+| 2     | GitHub Integration   | ✅ Complete |
+| 3     | Provider Architecture| ✅ Complete |
+| 4     | Hugging Face         | ✅ Complete |
+| 5     | Product Hunt         | ⏳ Deferred |
+| 6     | PostgreSQL           | ⏳ Planned  |
+| 7     | Redis Caching        | ⏳ Planned  |
+| 8     | AI Analysis          | ⏳ Planned  |
+| 9     | Kafka                | ⏳ Planned  |
+| 10    | Microservices        | ⏳ Planned  |
+| 11    | Frontend UI          | ⏳ Planned  |
+| 12    | Production Deployment| ⏳ Planned  |
+
+---
+
+## 📄 License
+
+Akshay Dhobale
+All rights are reserved.
