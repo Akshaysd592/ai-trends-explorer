@@ -1,25 +1,16 @@
 
-import { Trend } from '@ai-trend-explorer/shared-types';
+import { TrendQuery } from '@ai-trend-explorer/shared-types';
+
+import { TrendAggregator } from './aggregator/trend.aggregator';
+
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class TrendService {
-  getTrending(): Trend[] {
-    return [
-      {
-        id: '1',
-        title: 'OpenAI releases GPT-5.5',
-        source: 'OpenAI',
-        score: 98,
-        url: 'https://openai.com',
-      },
-      {
-        id: '2',
-        title: 'New TypeScript 6 features',
-        source: 'TypeScript',
-        score: 91,
-        url: 'https://www.typescriptlang.org',
-      },
-    ];
+  constructor( private readonly aggregator: TrendAggregator ){}
+
+  async getTrending(query: TrendQuery) {
+    // return  this.trendService.getTrending();
+    return this.aggregator.getTrending(query);
   }
 }

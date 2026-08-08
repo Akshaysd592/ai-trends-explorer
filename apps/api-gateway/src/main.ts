@@ -3,17 +3,27 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
-import {logger} from './logger/logger.js'
+import { logger } from './logger/logger.js'
 import { AppLoggerService } from './logger/app-logger.service';
 
 async function bootstrap() {
   logger.info("Bootstarpping API Gateway")
-  const app = await NestFactory.create(AppModule,{
-    bufferLogs:true,
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
   }
+  );
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      transformOptions: {
+      enableImplicitConversion: true,
+    },
+      forbidNonWhitelisted: true,
+    }),
   );
   app.useLogger(app.get(AppLoggerService));
   const globalPrefix = 'api';
