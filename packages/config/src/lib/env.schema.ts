@@ -19,7 +19,10 @@ export const envSchema = z.object({
   DB_USERNAME: z.string(),
   DB_PASSWORD: z.string(),
   DB_NAME: z.string().default('ai_trend_explorer'),
-  
+  REDIS_HOST: z.string().default('localhost'),
+  REDIS_PORT: z.coerce.number().default(6379),
+  REDIS_PASSWORD: z.string().optional(),
+  REDIS_CACHE_TTL: z.coerce.number().default(300),
 });
 
 export type EnvSchema = z.infer<typeof envSchema>;

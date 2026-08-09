@@ -5,6 +5,8 @@ import { TrendProviderRegistry, TREND_PROVIDERS } from './aggregator/trend.regis
 import { TrendProvider } from '@ai-trend-explorer/shared-types';
 import { AppLoggerService } from '../../logger/app-logger.service';
 import { TrendRepository } from './trend.repository';
+import { RedisCacheService } from '../redis/redis-cache.service';
+import { ConfigService } from '@ai-trend-explorer/config';
 
 describe('TrendService', () => {
   let service: TrendService;
@@ -15,6 +17,22 @@ describe('TrendService', () => {
     saveTrends: jest.fn(),
     saveSourceStatus: jest.fn(),
     getTrendById: jest.fn(),
+  };
+
+  const mockRedisCacheService = {
+    getCachedTrends: jest.fn(),
+    getCachedSourceStatuses: jest.fn(),
+    setCachedTrends: jest.fn(),
+    setCachedSourceStatuses: jest.fn(),
+    clearCache: jest.fn(),
+    isConnected: jest.fn(),
+    disconnect: jest.fn(),
+  };
+
+  const mockConfigService = {
+    getConfig: jest.fn().mockReturnValue({
+      redis: { cacheTtl: 300 },
+    }),
   };
 
   beforeEach(async () => {
@@ -42,6 +60,14 @@ describe('TrendService', () => {
           provide: TrendRepository,
           useValue: mockRepository,
         },
+        {
+          provide: RedisCacheService,
+          useValue: mockRedisCacheService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
+        },
       ],
     }).compile();
 
@@ -53,11 +79,32 @@ describe('TrendService', () => {
   });
 
   describe('getTrending', () => {
-    it('should return cached trends when cache is fresh', async () => {
+    it('should return cached trends from Redis when cache is fresh', async () => {
       const cachedTrends = [
         { id: '1', title: 'Cached Trend', source: 'github', score: 100, url: 'https://example.com' },
       ];
       const cachedSources = { github: { status: 'ok' } };
+      mockRedisCacheService.getCachedTrends.mockResolvedValue(cachedTrends);
+      mockRedisCacheService.getCachedSourceStatuses.mockResolvedValue(cachedSources);
+
+      const result = await service.getTrending({
+        page: 1,
+        limit: 20,
+        topic: 'ai',
+        sort: 'stars',
+      });
+
+      expect(result.trends).toEqual(cachedTrends);
+      expect(result.sources).toEqual(cachedSources);
+      expect(mockRedisCacheService.getCachedTrends).toHaveBeenCalled();
+    });
+
+    it('should return cached trends from PostgreSQL when Redis is empty', async () => {
+      const cachedTrends = [
+        { id: '1', title: 'Cached Trend', source: 'github', score: 100, url: 'https://example.com' },
+      ];
+      const cachedSources = { github: { status: 'ok' } };
+      mockRedisCacheService.getCachedTrends.mockResolvedValue(null);
       mockRepository.getCachedTrends.mockResolvedValue(cachedTrends);
       mockRepository.getCachedSourceStatuses.mockResolvedValue(cachedSources);
 
@@ -71,9 +118,11 @@ describe('TrendService', () => {
       expect(result.trends).toEqual(cachedTrends);
       expect(result.sources).toEqual(cachedSources);
       expect(mockRepository.getCachedTrends).toHaveBeenCalled();
+      expect(mockRedisCacheService.setCachedTrends).toHaveBeenCalled();
     });
 
-    it('should fetch from providers when cache is empty', async () => {
+    it('should fetch from providers when all caches are empty', async () => {
+      mockRedisCacheService.getCachedTrends.mockResolvedValue(null);
       mockRepository.getCachedTrends.mockResolvedValue(null);
       mockRepository.getCachedSourceStatuses.mockResolvedValue({});
       mockRepository.saveTrends.mockResolvedValue(undefined);
@@ -89,6 +138,7 @@ describe('TrendService', () => {
       expect(result.trends).toEqual([]);
       expect(result.sources).toEqual({});
       expect(mockRepository.saveTrends).toHaveBeenCalledWith([]);
+      expect(mockRedisCacheService.setCachedTrends).toHaveBeenCalled();
     });
   });
 

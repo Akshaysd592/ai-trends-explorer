@@ -6,6 +6,8 @@ import { TrendProviderRegistry, TREND_PROVIDERS } from './aggregator/trend.regis
 import { TrendProvider } from '@ai-trend-explorer/shared-types';
 import { AppLoggerService } from '../../logger/app-logger.service';
 import { TrendRepository } from './trend.repository';
+import { RedisCacheService } from '../redis/redis-cache.service';
+import { ConfigService } from '@ai-trend-explorer/config';
 
 describe('TrendController', () => {
   let controller: TrendController;
@@ -16,6 +18,22 @@ describe('TrendController', () => {
     saveTrends: jest.fn(),
     saveSourceStatus: jest.fn(),
     getTrendById: jest.fn(),
+  };
+
+  const mockRedisCacheService = {
+    getCachedTrends: jest.fn(),
+    getCachedSourceStatuses: jest.fn(),
+    setCachedTrends: jest.fn(),
+    setCachedSourceStatuses: jest.fn(),
+    clearCache: jest.fn(),
+    isConnected: jest.fn(),
+    disconnect: jest.fn(),
+  };
+
+  const mockConfigService = {
+    getConfig: jest.fn().mockReturnValue({
+      redis: { cacheTtl: 300 },
+    }),
   };
 
   beforeEach(async () => {
@@ -43,6 +61,14 @@ describe('TrendController', () => {
         {
           provide: TrendRepository,
           useValue: mockRepository,
+        },
+        {
+          provide: RedisCacheService,
+          useValue: mockRedisCacheService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
         },
       ],
     }).compile();

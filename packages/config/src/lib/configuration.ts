@@ -31,5 +31,11 @@ export function configuration() {
       password: env.DB_PASSWORD,
       name: env.DB_NAME,
     },
+    redis: {
+      host: env.REDIS_HOST,
+      port: env.REDIS_PORT,
+      password: env.REDIS_PASSWORD,
+      cacheTtl: env.REDIS_CACHE_TTL,
+    },
   };
 }
