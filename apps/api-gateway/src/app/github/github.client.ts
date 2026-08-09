@@ -3,8 +3,6 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
 import { GithubSearchResponse } from './github.types.js';
-import { LoggerConfig } from '@ai-trend-explorer/logger';
-import { GetTrendsQueryDto } from '../trend/dto/get-trends-query.dto.js';
 
 @Injectable()
 export class GithubClient {
@@ -12,10 +10,12 @@ export class GithubClient {
     private readonly http: HttpService,
   ) { }
 
-
-
-  async searchRepositories(query: string, page: number, limit: number): Promise<GithubSearchResponse> {
-   
+  async searchRepositories(
+    query: string,
+    page: number,
+    limit: number,
+    sort: 'stars' | 'updated' = 'stars',
+  ): Promise<GithubSearchResponse> {
     try {
       const response = await firstValueFrom(
         this.http.get<GithubSearchResponse>(
@@ -23,10 +23,10 @@ export class GithubClient {
           {
             params: {
               q: query,
-              sort: 'stars',
+              sort,
               order: 'desc',
               per_page: limit ?? 20,
-              page
+              page,
             },
           },
         ),
@@ -34,11 +34,7 @@ export class GithubClient {
 
       return response.data;
     } catch (error) {
-
-      throw new ServiceUnavailableException(
-        'Github API unavailalble'
-      )
+      throw new ServiceUnavailableException('Github API unavailable');
     }
-
   }
 }
