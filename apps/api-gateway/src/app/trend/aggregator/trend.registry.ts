@@ -1,16 +1,18 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { TrendProvider } from '@ai-trend-explorer/shared-types';
+import { Injectable } from "@nestjs/common";
+import { GithubTrendProvider } from "../../github/github.provider";
+import { TrendProvider } from "@ai-trend-explorer/shared-types";
 
-export const TREND_PROVIDERS = 'TREND_PROVIDERS';
+
 
 @Injectable()
-export class TrendProviderRegistry {
-  constructor(
-    @Inject(TREND_PROVIDERS)
-    private readonly providers: TrendProvider[],
-  ) {}
+export class TrendProviderRegistry{
+   
 
-  getProvider(): TrendProvider[] {
-    return this.providers;
-  }
+    constructor(private readonly github: GithubTrendProvider){}
+
+    getProvider(): TrendProvider[]{
+        return [
+            this.github
+        ]
+    }
 }
