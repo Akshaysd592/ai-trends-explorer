@@ -54,7 +54,7 @@ A monorepo built with [Nx](https://nx.dev) and [pnpm](https://pnpm.io):
 ```
 ai-trend-explorer/
 ├── apps/
-│   ├── web/              # Next.js frontend (coming soon)
+│   ├── web/              # Next.js frontend
 │   └── api-gateway/      # NestJS API gateway
 ├── packages/
 │   ├── config/           # Environment configuration
@@ -103,7 +103,7 @@ GET /trends
 | `sort`     | string | `stars`                  | Sort by `stars` or `updated`         |
 
 ```bash
-curl "http://localhost:3000/trends?page=1&limit=10&topic=artificial-intelligence&sort=stars"
+curl "http://localhost:3001/api/trends?page=1&limit=10&topic=artificial-intelligence&sort=stars"
 ```
 
 ### Get Trend by ID
@@ -115,7 +115,7 @@ GET /trends/:id
 Fetches a single trend by its ID from the database.
 
 ```bash
-curl "http://localhost:3000/trends/365739812"
+curl "http://localhost:3001/api/trends/365739812"
 ```
 
 ### Health Check
@@ -150,9 +150,19 @@ cd apps/api-gateway
 pnpm start:dev
 ```
 
-The API will be available at `http://localhost:3000`.
+The API will be available at `http://localhost:3001`.
+
+### Frontend
+
+```bash
+# Start the Next.js frontend (runs on port 3000)
+npx nx dev @ai-trend-explorer/web --port=3000
+```
+
+The frontend will be available at `http://localhost:3000`. It proxies API requests to the API gateway at `http://localhost:3001`.
 
 ### Testing
+</task_progress>
 
 ```bash
 # Run all tests
@@ -179,7 +189,7 @@ npx jest --config jest.config.cts
 | 8     | AI Analysis          | ⏳ Planned  |
 | 9     | Kafka                | ⏳ Planned  |
 | 10    | Microservices        | ⏳ Planned  |
-| 11    | Frontend UI          | ⏳ Planned  |
+| 11    | Frontend UI          | ✅ Complete |
 | 12    | Production Deployment| ⏳ Planned  |
 
 ---
