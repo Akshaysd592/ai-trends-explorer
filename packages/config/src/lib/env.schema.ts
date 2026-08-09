@@ -19,6 +19,7 @@ export const envSchema = z.object({
   DB_USERNAME: z.string(),
   DB_PASSWORD: z.string(),
   DB_NAME: z.string().default('ai_trend_explorer'),
+  
 });
 
 export type EnvSchema = z.infer<typeof envSchema>;
