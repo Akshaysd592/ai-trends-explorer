@@ -20,4 +20,20 @@ export class ConfigService {
       name: db.name,
     };
   }
+
+  getGithubApiUrl(): string {
+    return this.config.github.apiUrl;
+  }
+
+  getGithubToken(): string | undefined {
+    return this.config.github.token;
+  }
+
+  getHuggingFaceApiUrl(): string {
+    return this.config.huggingface.apiUrl;
+  }
+
+  getHuggingFaceToken(): string | undefined {
+    return this.config.huggingface.token;
+  }
 }

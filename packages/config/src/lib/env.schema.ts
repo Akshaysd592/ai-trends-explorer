@@ -10,7 +10,7 @@ export const envSchema = z.object({
   GITHUB_TOKEN: z.string().optional(),
   GITHUB_DEFAULT_LIMIT: z.coerce.number().default(20),
   GITHUB_REQUEST_TIMEOUT: z.coerce.number().default(10000),
-  HUGGINGFACE_API_URL: z.string().url().default('https://huggingface.co'),
+  HUGGINGFACE_API_URL: z.string().url(),
   HUGGINGFACE_API_TOKEN: z.string().optional(),
   HUGGINGFACE_DEFAULT_LIMIT: z.coerce.number().default(20),
   HUGGINGFACE_REQUEST_TIMEOUT: z.coerce.number().default(10000),

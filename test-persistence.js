@@ -3,13 +3,28 @@ const { TrendEntity } = require('./apps/api-gateway/src/app/trend/entities/trend
 const { SourceEntity } = require('./apps/api-gateway/src/app/trend/entities/source.entity');
 
 async function testPersistence() {
+  // Load environment variables
+  const dotenv = require('dotenv');
+  dotenv.config({ path: '.env' });
+
+  // Validate required environment variables
+  const requiredEnvVars = ['DB_HOST', 'DB_PORT', 'DB_USERNAME', 'DB_PASSWORD', 'DB_NAME'];
+  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+  if (missingVars.length > 0) {
+    console.error('❌ Error: Missing required environment variables:');
+    missingVars.forEach(varName => console.error(`   - ${varName}`));
+    console.error('\nPlease set these in your .env file.');
+    process.exit(1);
+  }
+
   const dataSource = new DataSource({
     type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    username: 'ai_trend_user',
-    password: 'ai_trend_pass',
-    database: 'ai_trend_explorer',
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT),
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     entities: [TrendEntity, SourceEntity],
     synchronize: true,
     logging: true,
