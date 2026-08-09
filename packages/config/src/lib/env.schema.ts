@@ -10,10 +10,16 @@ export const envSchema = z.object({
   GITHUB_TOKEN: z.string().optional(),
   GITHUB_DEFAULT_LIMIT: z.coerce.number().default(20),
   GITHUB_REQUEST_TIMEOUT: z.coerce.number().default(10000),
-  HUGGINGFACE_API_URL: z.string().url().default('https://huggingface.co'),
+  HUGGINGFACE_API_URL: z.string().url(),
   HUGGINGFACE_API_TOKEN: z.string().optional(),
   HUGGINGFACE_DEFAULT_LIMIT: z.coerce.number().default(20),
   HUGGINGFACE_REQUEST_TIMEOUT: z.coerce.number().default(10000),
+  DB_HOST: z.string().default('localhost'),
+  DB_PORT: z.coerce.number().default(5432),
+  DB_USERNAME: z.string(),
+  DB_PASSWORD: z.string(),
+  DB_NAME: z.string().default('ai_trend_explorer'),
+  
 });
 
 export type EnvSchema = z.infer<typeof envSchema>;
