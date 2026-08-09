@@ -24,12 +24,5 @@ export function configuration() {
       defaultLimit: env.HUGGINGFACE_DEFAULT_LIMIT,
       timeout: env.HUGGINGFACE_REQUEST_TIMEOUT,
     },
-    database: {
-      host: env.DB_HOST,
-      port: env.DB_PORT,
-      username: env.DB_USERNAME,
-      password: env.DB_PASSWORD,
-      name: env.DB_NAME,
-    },
   };
 }

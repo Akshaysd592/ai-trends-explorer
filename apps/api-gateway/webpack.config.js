@@ -9,7 +9,6 @@ module.exports = {
       devtoolModuleFilenameTemplate: '[absolute-resource-path]',
     }),
   },
-  externals: { typeorm: 'commonjs typeorm', pg: 'commonjs pg' },
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',

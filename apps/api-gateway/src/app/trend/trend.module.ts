@@ -9,7 +9,6 @@ import { HuggingFaceTrendProvider } from '../huggingface/huggingface.provider';
 import { TrendAggregator } from './aggregator/trend.aggregator';
 import { TrendProviderRegistry, TREND_PROVIDERS } from './aggregator/trend.registry';
 import { AppLoggerService } from '../../logger/app-logger.service';
-import { TrendPersistenceModule } from './trend-persistence.module';
 
 @Module({
   providers: [
@@ -28,6 +27,6 @@ import { TrendPersistenceModule } from './trend-persistence.module';
     },
   ],
   controllers: [TrendController],
-  imports: [GithubModule, HuggingFaceModule, TrendPersistenceModule],
+  imports: [GithubModule, HuggingFaceModule],
 })
 export class TrendModule {}

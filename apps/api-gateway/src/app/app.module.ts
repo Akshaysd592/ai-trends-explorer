@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { envSchema } from '@ai-trend-explorer/config';
 import { AppLoggerService } from '../logger/app-logger.service';
@@ -7,6 +9,7 @@ import { HealthController } from './health/health.controller';
 import { HealthModule } from './health/health.module';
 import { HealthService } from './health/health.service';
 import { MockTrendSource } from './trend/sources/mock-trend.source';
+import { GithubTrendProvider } from './github/github.provider';
 import { GithubController } from './github/github.controller';
 import { GithubModule } from './github/github.module';
 
@@ -20,9 +23,9 @@ import { GithubModule } from './github/github.module';
     HealthModule,
     GithubModule,
   ],
-  controllers: [ HealthController, GithubController],
+  controllers: [AppController, HealthController, GithubController],
   providers: [
-    
+    AppService,
     AppLoggerService,
     HealthService,
     MockTrendSource,

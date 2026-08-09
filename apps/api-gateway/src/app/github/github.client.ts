@@ -1,7 +1,6 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { ConfigService } from '@ai-trend-explorer/config';
 
 import { GithubSearchResponse } from './github.types.js';
 
@@ -9,7 +8,6 @@ import { GithubSearchResponse } from './github.types.js';
 export class GithubClient {
   constructor(
     private readonly http: HttpService,
-    private readonly configService: ConfigService,
   ) { }
 
   async searchRepositories(
@@ -19,10 +17,9 @@ export class GithubClient {
     sort: 'stars' | 'updated' = 'stars',
   ): Promise<GithubSearchResponse> {
     try {
-      const apiUrl = this.configService.getGithubApiUrl();
       const response = await firstValueFrom(
         this.http.get<GithubSearchResponse>(
-          `${apiUrl}/search/repositories`,
+          'https://api.github.com/search/repositories',
           {
             params: {
               q: query,

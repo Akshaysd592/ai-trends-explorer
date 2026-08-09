@@ -106,18 +106,6 @@ GET /trends
 curl "http://localhost:3000/trends?page=1&limit=10&topic=artificial-intelligence&sort=stars"
 ```
 
-### Get Trend by ID
-
-```
-GET /trends/:id
-```
-
-Fetches a single trend by its ID from the database.
-
-```bash
-curl "http://localhost:3000/trends/365739812"
-```
-
 ### Health Check
 
 ```
@@ -173,7 +161,7 @@ npx jest --config jest.config.cts
 | 3     | Provider Architecture| ✅ Complete |
 | 4     | Hugging Face         | ✅ Complete |
 | 5     | Product Hunt         | ⏳ Deferred |
-| 6     | PostgreSQL           | ✅ Complete |
+| 6     | PostgreSQL           | ⏳ Planned  |
 | 7     | Redis Caching        | ⏳ Planned  |
 | 8     | AI Analysis          | ⏳ Planned  |
 | 9     | Kafka                | ⏳ Planned  |
