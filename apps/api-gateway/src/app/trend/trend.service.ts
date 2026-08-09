@@ -3,6 +3,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { TrendAggregator } from './aggregator/trend.aggregator';
 import { AggregatedTrendResult } from './aggregator/trend.aggregator';
 import { TrendRepository } from './trend.repository';
+import { RedisCacheService } from '../redis/redis-cache.service';
+import { ConfigService } from '@ai-trend-explorer/config';
 
 @Injectable()
 export class TrendService {
@@ -11,14 +13,34 @@ export class TrendService {
   constructor(
     private readonly aggregator: TrendAggregator,
     private readonly repository: TrendRepository,
+    private readonly redisCacheService: RedisCacheService,
+    private readonly configService: ConfigService,
   ) {}
 
   async getTrending(query: TrendQuery): Promise<AggregatedTrendResult> {
-    // Check cache first
+    const redisTtl = this.configService.getConfig().redis.cacheTtl;
+
+    // Check Redis cache first
+    const redisCachedTrends = await this.redisCacheService.getCachedTrends();
+    if (redisCachedTrends && redisCachedTrends.length > 0) {
+      this.logger.log('Returning cached trends from Redis');
+      const redisCachedSources = await this.redisCacheService.getCachedSourceStatuses();
+      return {
+        trends: redisCachedTrends,
+        sources: redisCachedSources,
+      };
+    }
+
+    // Check PostgreSQL cache
     const cachedTrends = await this.repository.getCachedTrends();
     if (cachedTrends) {
-      this.logger.log('Returning cached trends from database');
+      this.logger.log('Returning cached trends from PostgreSQL');
       const cachedSources = await this.repository.getCachedSourceStatuses();
+      
+      // Update Redis cache with PostgreSQL data
+      await this.redisCacheService.setCachedTrends(cachedTrends, redisTtl);
+      await this.redisCacheService.setCachedSourceStatuses(cachedSources, redisTtl);
+      
       return {
         trends: cachedTrends,
         sources: cachedSources,
@@ -34,6 +56,10 @@ export class TrendService {
     for (const [source, status] of Object.entries(result.sources)) {
       await this.repository.saveSourceStatus(source, status);
     }
+
+    // Update Redis cache
+    await this.redisCacheService.setCachedTrends(result.trends, redisTtl);
+    await this.redisCacheService.setCachedSourceStatuses(result.sources, redisTtl);
 
     return result;
   }

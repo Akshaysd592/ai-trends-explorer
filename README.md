@@ -132,7 +132,8 @@ GET /health
 
 - Node.js 22+
 - pnpm
-- Docker (for PostgreSQL, Redis, Kafka — future phases)
+- Docker (for PostgreSQL, Kafka — future phases)
+- Redis (via Docker or local install)
 
 ### Setup
 
@@ -174,7 +175,7 @@ npx jest --config jest.config.cts
 | 4     | Hugging Face         | ✅ Complete |
 | 5     | Product Hunt         | ⏳ Deferred |
 | 6     | PostgreSQL           | ✅ Complete |
-| 7     | Redis Caching        | ⏳ Planned  |
+| 7     | Redis Caching        | ✅ Complete |
 | 8     | AI Analysis          | ⏳ Planned  |
 | 9     | Kafka                | ⏳ Planned  |
 | 10    | Microservices        | ⏳ Planned  |
