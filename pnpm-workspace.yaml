@@ -3,6 +3,8 @@ packages:
   - 'web'
   - 'apps/api-gateway'
   - 'apps/api-gateway-e2e'
+  - 'apps/web'
+  - 'apps/web-e2e'
 allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
