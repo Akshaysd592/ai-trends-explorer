@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import TrendCard from './components/TrendCard';
+import TrendCard from '@/components/TrendCard';
 import { useTrends } from '../lib/trends-api';
+import type { SortOrder } from '@/lib/types/index';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,7 +26,7 @@ export default function TrendsPage() {
   const [page, setPage] = useState(1);
   const [topic, setTopic] = useState('artificial-intelligence');
   const [language, setLanguage] = useState('');
-  const [sort, setSort] = useState<'stars' | 'updated'>('stars');
+  const [sort, setSort] = useState<SortOrder>('stars');
   const [limit, setLimit] = useState(12);
 
   const { data, isLoading, error } = useTrends({ page, limit, topic, language: language || undefined, sort });
@@ -40,7 +41,7 @@ export default function TrendsPage() {
     setPage(1);
   };
 
-  const handleSortChange = (newSort: 'stars' | 'updated') => {
+  const handleSortChange = (newSort: SortOrder) => {
     setSort(newSort);
     setPage(1);
   };
@@ -90,7 +91,7 @@ export default function TrendsPage() {
 
             <div className="filters__group filters__group--inline">
               <label className="filters__label">Sort By</label>
-              <Select value={sort} onValueChange={(value) => handleSortChange(value as 'stars' | 'updated')}>
+              <Select value={sort} onValueChange={(value) => handleSortChange(value as SortOrder)}>
                 <SelectTrigger className="filters__select">
                   <SelectValue />
                 </SelectTrigger>

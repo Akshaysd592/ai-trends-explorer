@@ -1,28 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import type { Trend } from '@ai-trend-explorer/shared-types';
-
-interface TrendCardProps {
-  trend: Trend;
-}
-
-function formatNumber(num: number | undefined): string {
-  if (num === undefined) return 'N/A';
-  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-  return String(num);
-}
-
-function formatDate(dateString: string | undefined): string {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
+import type { TrendCardProps } from '@/lib/types/index';
+import { formatCompactNumber, formatShortDate } from '@/lib/formatters';
 
 export default function TrendCard({ trend }: TrendCardProps) {
   const isGithub = trend.source === 'github';
@@ -55,7 +35,7 @@ export default function TrendCard({ trend }: TrendCardProps) {
           </div>
           <div className="trend-card__score">
             <span className="trend-card__score-label">Score</span>
-            <span className="trend-card__score-value">{formatNumber(trend.score)}</span>
+            <span className="trend-card__score-value">{formatCompactNumber(trend.score)}</span>
           </div>
         </div>
 
@@ -75,13 +55,13 @@ export default function TrendCard({ trend }: TrendCardProps) {
                 <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true">
                   <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z" />
                 </svg>
-                {formatNumber(trend.stars)}
+                {formatCompactNumber(trend.stars)}
               </div>
               <div className="trend-card__stat" title="Forks">
                 <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true">
                   <path d="M5 3.25a2.25 2.25 0 113 2.122V6A2.5 2.5 0 0010.5 8.5h1.378a2.251 2.251 0 110 1.5H10.5A4 4 0 017 6.03v-.658A2.25 2.25 0 015 3.25zm1.5 0a.75.75 0 10-1.5 0 .75.75 0 001.5 0zM13 11a.75.75 0 100-1.5.75.75 0 000 1.5z" />
                 </svg>
-                {formatNumber(trend.forks)}
+                {formatCompactNumber(trend.forks)}
               </div>
             </>
           )}
@@ -90,7 +70,7 @@ export default function TrendCard({ trend }: TrendCardProps) {
               <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true">
                 <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm0 1.5a6.5 6.5 0 110 13 6.5 6.5 0 010-13zM7.25 3h1.5v5.19l3.28 3.28-1.06 1.06L7.25 9.5V3z" />
               </svg>
-              {formatDate(trend.updatedAt)}
+              {formatShortDate(trend.updatedAt)}
             </div>
           )}
         </div>

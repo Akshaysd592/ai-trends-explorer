@@ -1,19 +1,15 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import TrendCard from '../components/TrendCard';
+import TrendCard from '@/components/TrendCard';
 import { searchTrends } from '../../lib/trends-api';
-import type { Trend } from '@ai-trend-explorer/shared-types';
-
-interface SearchPageProps {
-  searchParams: Promise<{ q?: string }>;
-}
+import type { SearchPageProps } from '@/lib/types/index';
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
   const query = params.q || '';
 
   // Server-side data fetching for SEO
-  let results: Trend[] = [];
+  let results: Awaited<ReturnType<typeof searchTrends>>['data'] = [];
   let total = 0;
 
   if (query.trim()) {

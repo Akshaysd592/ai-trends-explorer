@@ -1,0 +1,205 @@
+/* ============ Trend Card ============ */
+.trend-card-link {
+  display: block;
+  height: 100%;
+  transition: transform 0.15s;
+}
+
+.trend-card-link:hover {
+  transform: translateY(-3px);
+}
+
+.trend-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  transition: border-color 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.trend-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, transparent);
+}
+
+.trend-card--github::before {
+  background: linear-gradient(90deg, #6366f1, #22d3ee);
+}
+
+.trend-card--huggingface::before {
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+}
+
+.trend-card-link:hover .trend-card {
+  border-color: rgba(129, 140, 248, 0.35);
+}
+
+.trend-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.trend-card__source {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.trend-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.4rem;
+  color: #c7d2fe;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.trend-card__badge--huggingface {
+  color: #fcd34d;
+  border-color: rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.trend-card__language {
+  font-size: 0.7rem;
+  color: #64748b;
+  background: rgba(30, 41, 59, 0.8);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.35rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.trend-card__score {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.trend-card__score-label {
+  display: block;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #475569;
+}
+
+.trend-card__score-value {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #a5b4fc;
+}
+
+.trend-card__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  position: relative;
+}
+
+.trend-card__full-title {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #64748b;
+  margin-top: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trend-card__description {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 0.85rem;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.trend-card__stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.trend-card__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.trend-card__stat--date {
+  margin-left: auto;
+}
+
+.trend-card__topics {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.trend-card__topic {
+  font-size: 0.68rem;
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.trend-card__topic--more {
+  color: #64748b;
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.trend-card__footer {
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.trend-card__view {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6366f1;
+  transition: color 0.15s;
+}
+
+.trend-card-link:hover .trend-card__view {
+  color: #818cf8;
+}

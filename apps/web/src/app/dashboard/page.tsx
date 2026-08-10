@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { fetchDashboardStats } from '../../lib/trends-api';
-import type { DashboardStats } from '../../lib/trends-api';
+import type { DashboardStats } from '@/lib/types/index';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {

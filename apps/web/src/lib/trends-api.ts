@@ -1,41 +1,18 @@
 import axios from 'axios';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import type { Trend, TrendQuery } from '@ai-trend-explorer/shared-types';
+import type {
+  TrendsResponse,
+  TrendResponse,
+  SearchResponse,
+  DashboardStats,
+  TrendsQuery,
+} from './types/index';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
-export interface SourceStatus {
-  status: 'ok' | 'failed';
-  error?: string;
-}
-
-export interface TrendsResponse {
-  success: boolean;
-  data: Trend[];
-  sources: Record<string, SourceStatus>;
-  pagination: {
-    page: number;
-    limit: number;
-  };
-  timestamp: string;
-}
-
-export interface TrendsQuery extends Partial<TrendQuery> {
-  page?: number;
-  limit?: number;
-  topic?: string;
-  language?: string;
-  sort?: 'stars' | 'updated';
-}
-
-export interface SearchResponse {
-  success: boolean;
-  data: Trend[];
-  query: string;
-  total: number;
-  timestamp: string;
-}
-
+/**
+ * Fetch a paginated list of trends.
+ */
 export async function fetchTrends(query: TrendsQuery = {}): Promise<TrendsResponse> {
   const params = new URLSearchParams();
   if (query.page !== undefined) params.set('page', String(query.page));
@@ -45,33 +22,20 @@ export async function fetchTrends(query: TrendsQuery = {}): Promise<TrendsRespon
   if (query.sort) params.set('sort', query.sort);
 
   const response = await axios.get<TrendsResponse>(`${API_BASE}/api/trends`, { params });
-
   return response.data;
 }
 
-export async function fetchTrendById(id: string): Promise<{ success: boolean; data: Trend }> {
-  const response = await axios.get<{ success: boolean; data: Trend }>(`${API_BASE}/api/trends/${id}`);
-
+/**
+ * Fetch a single trend by ID.
+ */
+export async function fetchTrendById(id: string): Promise<TrendResponse> {
+  const response = await axios.get<TrendResponse>(`${API_BASE}/api/trends/${id}`);
   return response.data;
 }
 
-export function useTrends(query: TrendsQuery = {}, options?: Omit<UseQueryOptions<TrendsResponse>, 'queryKey' | 'queryFn'>) {
-  return useQuery({
-    queryKey: ['trends', query],
-    queryFn: () => fetchTrends(query),
-    ...options,
-  });
-}
-
-export function useTrend(id: string, options?: Omit<UseQueryOptions<{ success: boolean; data: Trend }>, 'queryKey' | 'queryFn'>) {
-  return useQuery({
-    queryKey: ['trend', id],
-    queryFn: () => fetchTrendById(id),
-    enabled: !!id && options?.enabled !== false,
-    ...options,
-  });
-}
-
+/**
+ * Search trends by query string.
+ */
 export async function searchTrends(query: string): Promise<SearchResponse> {
   if (!query.trim()) {
     return {
@@ -86,11 +50,53 @@ export async function searchTrends(query: string): Promise<SearchResponse> {
   const response = await axios.get<SearchResponse>(`${API_BASE}/api/trends/search`, {
     params: { q: query },
   });
-
   return response.data;
 }
 
-export function useSearch(query: string, options?: Omit<UseQueryOptions<SearchResponse>, 'queryKey' | 'queryFn'>) {
+/**
+ * Fetch dashboard statistics.
+ */
+export async function fetchDashboardStats(): Promise<DashboardStats> {
+  const response = await axios.get<DashboardStats>(`${API_BASE}/api/trends/stats`);
+  return response.data;
+}
+
+/**
+ * React Query hook for paginated trends.
+ */
+export function useTrends(
+  query: TrendsQuery = {},
+  options?: Omit<UseQueryOptions<TrendsResponse>, 'queryKey' | 'queryFn'>,
+) {
+  return useQuery({
+    queryKey: ['trends', query],
+    queryFn: () => fetchTrends(query),
+    ...options,
+  });
+}
+
+/**
+ * React Query hook for a single trend.
+ */
+export function useTrend(
+  id: string,
+  options?: Omit<UseQueryOptions<TrendResponse>, 'queryKey' | 'queryFn'>,
+) {
+  return useQuery({
+    queryKey: ['trend', id],
+    queryFn: () => fetchTrendById(id),
+    enabled: !!id && options?.enabled !== false,
+    ...options,
+  });
+}
+
+/**
+ * React Query hook for search.
+ */
+export function useSearch(
+  query: string,
+  options?: Omit<UseQueryOptions<SearchResponse>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['search', query],
     queryFn: () => searchTrends(query),
@@ -99,24 +105,12 @@ export function useSearch(query: string, options?: Omit<UseQueryOptions<SearchRe
   });
 }
 
-export interface DashboardStats {
-  totalTrends: number;
-  sources: {
-    github: number;
-    huggingface: number;
-  };
-  topLanguages: Array<{ language: string; count: number }>;
-  topTopics: Array<{ topic: string; count: number }>;
-  averageScore: number;
-  totalStars: number;
-}
-
-export async function fetchDashboardStats(): Promise<DashboardStats> {
-  const response = await axios.get<DashboardStats>(`${API_BASE}/api/trends/stats`);
-  return response.data;
-}
-
-export function useDashboardStats(options?: Omit<UseQueryOptions<DashboardStats>, 'queryKey' | 'queryFn'>) {
+/**
+ * React Query hook for dashboard stats.
+ */
+export function useDashboardStats(
+  options?: Omit<UseQueryOptions<DashboardStats>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['dashboard', 'stats'],
     queryFn: fetchDashboardStats,
