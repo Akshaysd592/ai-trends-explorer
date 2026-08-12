@@ -37,5 +37,21 @@ export function configuration() {
       password: env.REDIS_PASSWORD,
       cacheTtl: env.REDIS_CACHE_TTL,
     },
+    trends: {
+      historicalTtlDays: env.REDIS_HISTORICAL_TTL_DAYS,
+    },
+    kafka: {
+      brokers: env.KAFKA_BROKERS,
+      clientId: env.KAFKA_CLIENT_ID,
+      groupId: env.KAFKA_GROUP_ID,
+      topicAnalysisRequest: env.KAFKA_TOPIC_ANALYSIS_REQUEST,
+    },
+    ai: {
+      provider: env.AI_PROVIDER,
+      apiUrl: env.AI_API_URL,
+      model: env.AI_MODEL,
+      apiToken: env.AI_API_TOKEN,
+      timeout: env.AI_REQUEST_TIMEOUT,
+    },
   };
 }

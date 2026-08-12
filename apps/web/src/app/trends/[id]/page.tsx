@@ -3,14 +3,20 @@
 import { use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useTrend } from '@/lib/trends-api';
+import { useTrend, useTrendAnalysis } from '@/lib/trends-api';
 import type { TrendDetailPageProps } from '@/lib/types/index';
 import { formatLocaleNumber, formatLongDate } from '@/lib/formatters';
 
 export default function TrendDetailPage({ params }: TrendDetailPageProps) {
   const router = useRouter();
-  const { id } = use(params);
+  const { id: encodedId } = use(params);
+  const id = decodeURIComponent(encodedId);
   const { data, isLoading, error } = useTrend(id);
+  const {
+    data: analysisData,
+    isLoading: analysisLoading,
+    error: analysisError,
+  } = useTrendAnalysis(id);
 
   if (isLoading) {
     return (
@@ -54,6 +60,7 @@ export default function TrendDetailPage({ params }: TrendDetailPageProps) {
   }
 
   const isGithub = trend.source === 'github';
+  const analysis = analysisData?.data;
 
   return (
     <div className="detail-page">
@@ -152,6 +159,85 @@ export default function TrendDetailPage({ params }: TrendDetailPageProps) {
             </button>
           </div>
         </article>
+
+        {/* AI Analysis Section */}
+        <section className="analysis-section">
+          <h2 className="analysis-section__title">🤖 AI Analysis</h2>
+
+          {analysisLoading && !analysis && (
+            <div className="analysis-pending">
+              <div className="analysis-pending__spinner" />
+              <p>Generating AI analysis…</p>
+            </div>
+          )}
+
+          {analysisError && !analysis && (
+            <div className="analysis-error">
+              <p>Failed to load AI analysis.</p>
+            </div>
+          )}
+
+          {analysis?.status === 'pending' && (
+            <div className="analysis-pending">
+              <div className="analysis-pending__spinner" />
+              <p>AI analysis is being generated asynchronously…</p>
+              <p className="analysis-pending__hint">This may take a few seconds. Auto-refreshing…</p>
+            </div>
+          )}
+
+          {analysis?.status === 'failed' && (
+            <div className="analysis-error">
+              <p>AI analysis failed. Please try again later.</p>
+              {analysis.error && <p className="analysis-error__detail">{analysis.error}</p>}
+            </div>
+          )}
+
+          {analysis?.status === 'completed' && (
+            <div className="analysis-content">
+              <div className="analysis-content__meta">
+                {analysis.category && (
+                  <span className="analysis-content__category">{analysis.category}</span>
+                )}
+                {analysis.sentiment && (
+                  <span className={`analysis-content__sentiment analysis-content__sentiment--${analysis.sentiment}`}>
+                    {analysis.sentiment === 'excited' ? '🔥 Excited' : analysis.sentiment === 'positive' ? '👍 Positive' : '😐 Neutral'}
+                  </span>
+                )}
+              </div>
+
+              {analysis.summary && (
+                <p className="analysis-content__summary">{analysis.summary}</p>
+              )}
+
+              {analysis.keyPoints && analysis.keyPoints.length > 0 && (
+                <div className="analysis-content__keypoints">
+                  <h3>Key Points</h3>
+                  <ul>
+                    {analysis.keyPoints.map((point: string, i: number) => (
+                      <li key={i}>{point}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {analysis.tags && analysis.tags.length > 0 && (
+                <div className="analysis-content__tags">
+                  {analysis.tags.map((tag: string) => (
+                    <span key={tag} className="analysis-content__tag">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {analysis.generatedAt && (
+                <p className="analysis-content__generated">
+                  Generated {formatLongDate(analysis.generatedAt)}
+                </p>
+              )}
+            </div>
+          )}
+        </section>
 
         <div className="detail-meta">
           <span>ID: {trend.id}</span>

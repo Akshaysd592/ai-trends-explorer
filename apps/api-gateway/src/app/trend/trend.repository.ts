@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, MoreThan } from 'typeorm';
+import { Repository, MoreThan, LessThan } from 'typeorm';
 import { Trend } from '@ai-trend-explorer/shared-types';
 import { TrendEntity } from './entities/trend.entity';
 import { SourceEntity } from './entities/source.entity';
@@ -86,6 +86,24 @@ export class TrendRepository {
   }
 
   /**
+   * Retrieve historical trends older than the cache TTL but within the historical period.
+   * Returns trends from the last N days (excluding very recent ones).
+   */
+  async getHistoricalTrends(historicalTtlDays: number): Promise<Trend[]> {
+    const recentCutoff = new Date(Date.now() - CACHE_TTL_MINUTES * 60 * 1000);
+    const historicalCutoff = new Date(Date.now() - historicalTtlDays * 24 * 60 * 60 * 1000);
+
+    const historical = await this.trendRepo
+      .createQueryBuilder('trend')
+      .where('trend.savedAt < :recentCutoff', { recentCutoff })
+      .andWhere('trend.savedAt > :historicalCutoff', { historicalCutoff })
+      .orderBy('trend.score', 'DESC')
+      .getMany();
+
+    return historical.map((entity) => this.entityToTrend(entity));
+  }
+
+  /**
    * Retrieve cached source statuses.
    */
   async getCachedSourceStatuses(): Promise<Record<string, SourceStatus>> {
@@ -107,6 +125,91 @@ export class TrendRepository {
     const entity = await this.trendRepo.findOne({ where: { id } });
     if (!entity) return null;
     return this.entityToTrend(entity);
+  }
+
+  /**
+   * Search trends by query string across title, description, and topics.
+   */
+  async searchTrends(query: string): Promise<Trend[]> {
+    const searchTerm = `%${query}%`;
+    const entities = await this.trendRepo
+      .createQueryBuilder('trend')
+      .where('LOWER(trend.title) LIKE LOWER(:query)', { query: searchTerm })
+      .orWhere('LOWER(trend.description) LIKE LOWER(:query)', { query: searchTerm })
+      .orWhere('trend.topics && ARRAY[:query]::text[]', { query: query.toLowerCase() })
+      .orderBy('trend.score', 'DESC')
+      .getMany();
+
+    return entities.map((entity) => this.entityToTrend(entity));
+  }
+
+  /**
+   * Get dashboard statistics aggregated from the database.
+   */
+  async getDashboardStats(): Promise<{
+    totalTrends: number;
+    sources: { github: number; huggingface: number };
+    topLanguages: Array<{ language: string; count: number }>;
+    topTopics: Array<{ topic: string; count: number }>;
+    averageScore: number;
+    totalStars: number;
+  }> {
+    const totalTrends = await this.trendRepo.count();
+
+    const githubCount = await this.trendRepo.count({
+      where: { source: 'github' },
+    });
+    const huggingfaceCount = await this.trendRepo.count({
+      where: { source: 'huggingface' },
+    });
+
+    const topLanguagesRaw = await this.trendRepo
+      .createQueryBuilder('trend')
+      .select('trend.language', 'language')
+      .addSelect('COUNT(*)', 'count')
+      .where('trend.language IS NOT NULL')
+      .groupBy('trend.language')
+      .orderBy('count', 'DESC')
+      .limit(10)
+      .getRawMany();
+
+    const topLanguages = topLanguagesRaw.map((row) => ({
+      language: row.language,
+      count: parseInt(row.count, 10),
+    }));
+
+    const topTopicsRaw = await this.trendRepo
+      .createQueryBuilder('trend')
+      .select('unnest(trend.topics)', 'topic')
+      .addSelect('COUNT(*)', 'count')
+      .where('array_length(trend.topics, 1) > 0')
+      .groupBy('topic')
+      .orderBy('count', 'DESC')
+      .limit(10)
+      .getRawMany();
+
+    const topTopics = topTopicsRaw.map((row) => ({
+      topic: row.topic,
+      count: parseInt(row.count, 10),
+    }));
+
+    const scoreStats = await this.trendRepo
+      .createQueryBuilder('trend')
+      .select('AVG(trend.score)', 'averageScore')
+      .addSelect('COALESCE(SUM(trend.stars), 0)', 'totalStars')
+      .getRawOne();
+
+    return {
+      totalTrends,
+      sources: {
+        github: githubCount,
+        huggingface: huggingfaceCount,
+      },
+      topLanguages,
+      topTopics,
+      averageScore: parseFloat(scoreStats.averageScore) || 0,
+      totalStars: parseInt(scoreStats.totalStars, 10) || 0,
+    };
   }
 
   /**

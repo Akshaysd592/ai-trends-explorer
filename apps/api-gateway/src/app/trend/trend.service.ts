@@ -19,14 +19,22 @@ export class TrendService {
 
   async getTrending(query: TrendQuery): Promise<AggregatedTrendResult> {
     const redisTtl = this.configService.getConfig().redis.cacheTtl;
+    const historicalTtlDays = this.configService.getConfig().trends.historicalTtlDays;
 
     // Check Redis cache first
     const redisCachedTrends = await this.redisCacheService.getCachedTrends();
     if (redisCachedTrends && redisCachedTrends.length > 0) {
       this.logger.log('Returning cached trends from Redis');
       const redisCachedSources = await this.redisCacheService.getCachedSourceStatuses();
+      
+      // Also fetch historical trends to show older data
+      const historicalTrends = await this.repository.getHistoricalTrends(historicalTtlDays);
+      
+      // Merge recent and historical trends
+      const mergedTrends = this.mergeAndDeduplicate(redisCachedTrends, historicalTrends);
+      
       return {
-        trends: redisCachedTrends,
+        trends: mergedTrends,
         sources: redisCachedSources,
       };
     }
@@ -41,8 +49,14 @@ export class TrendService {
       await this.redisCacheService.setCachedTrends(cachedTrends, redisTtl);
       await this.redisCacheService.setCachedSourceStatuses(cachedSources, redisTtl);
       
+      // Also fetch historical trends to show older data
+      const historicalTrends = await this.repository.getHistoricalTrends(historicalTtlDays);
+      
+      // Merge recent and historical trends
+      const mergedTrends = this.mergeAndDeduplicate(cachedTrends, historicalTrends);
+      
       return {
-        trends: cachedTrends,
+        trends: mergedTrends,
         sources: cachedSources,
       };
     }
@@ -61,10 +75,62 @@ export class TrendService {
     await this.redisCacheService.setCachedTrends(result.trends, redisTtl);
     await this.redisCacheService.setCachedSourceStatuses(result.sources, redisTtl);
 
-    return result;
+    // Also fetch historical trends to show older data
+    const historicalTrends = await this.repository.getHistoricalTrends(historicalTtlDays);
+    
+    // Merge recent and historical trends
+    const mergedTrends = this.mergeAndDeduplicate(result.trends, historicalTrends);
+
+    return {
+      trends: mergedTrends,
+      sources: result.sources,
+    };
+  }
+
+  /**
+   * Merge two trend arrays, deduplicate by ID, and sort by score.
+   * Recent trends take precedence over historical ones with the same ID.
+   */
+  private mergeAndDeduplicate(recent: Trend[], historical: Trend[]): Trend[] {
+    const seen = new Set<string>();
+    const merged: Trend[] = [];
+
+    // Add recent trends first (they take precedence)
+    for (const trend of recent) {
+      if (!seen.has(trend.id)) {
+        seen.add(trend.id);
+        merged.push(trend);
+      }
+    }
+
+    // Add historical trends that don't exist in recent
+    for (const trend of historical) {
+      if (!seen.has(trend.id)) {
+        seen.add(trend.id);
+        merged.push(trend);
+      }
+    }
+
+    // Sort by score descending
+    return merged.sort((a, b) => b.score - a.score);
   }
 
   async getTrendById(id: string): Promise<Trend | null> {
     return this.repository.getTrendById(id);
+  }
+
+  async searchTrends(query: string): Promise<Trend[]> {
+    return this.repository.searchTrends(query);
+  }
+
+  async getDashboardStats(): Promise<{
+    totalTrends: number;
+    sources: { github: number; huggingface: number };
+    topLanguages: Array<{ language: string; count: number }>;
+    topTopics: Array<{ topic: string; count: number }>;
+    averageScore: number;
+    totalStars: number;
+  }> {
+    return this.repository.getDashboardStats();
   }
 }

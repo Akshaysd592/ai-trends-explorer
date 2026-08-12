@@ -1,6 +1,6 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { Redis } from 'ioredis';
-import { Trend } from '@ai-trend-explorer/shared-types';
+import { Trend, TrendAnalysis } from '@ai-trend-explorer/shared-types';
 import { SourceStatus } from '../trend/aggregator/trend.aggregator';
 
 @Injectable()
@@ -8,6 +8,7 @@ export class RedisCacheService {
   private readonly logger = new Logger(RedisCacheService.name);
   private readonly CACHE_KEY = 'trends:cache';
   private readonly SOURCES_KEY = 'trends:sources';
+  private readonly ANALYSIS_PREFIX = 'analysis:';
 
   constructor(@Inject('REDIS_CLIENT') private readonly redisClient: Redis) {}
 
@@ -76,6 +77,38 @@ export class RedisCacheService {
       this.logger.log('Cached source statuses in Redis');
     } catch (error) {
       this.logger.error('Failed to cache source statuses in Redis', error);
+    }
+  }
+
+  /**
+   * Get cached analysis for a trend from Redis
+   */
+  async getCachedAnalysis(trendId: string): Promise<TrendAnalysis | null> {
+    try {
+      const cached = await this.redisClient.get(`${this.ANALYSIS_PREFIX}${trendId}`);
+      if (!cached) {
+        return null;
+      }
+      return JSON.parse(cached) as TrendAnalysis;
+    } catch (error) {
+      this.logger.error(`Failed to get cached analysis for trend "${trendId}"`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Save analysis for a trend to Redis cache
+   */
+  async setCachedAnalysis(analysis: TrendAnalysis, ttl: number): Promise<void> {
+    try {
+      await this.redisClient.setex(
+        `${this.ANALYSIS_PREFIX}${analysis.trendId}`,
+        ttl,
+        JSON.stringify(analysis),
+      );
+      this.logger.log(`Cached analysis for trend "${analysis.trendId}" in Redis (TTL: ${ttl}s)`);
+    } catch (error) {
+      this.logger.error(`Failed to cache analysis for trend "${analysis.trendId}"`, error);
     }
   }
 

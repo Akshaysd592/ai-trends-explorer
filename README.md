@@ -162,7 +162,6 @@ npx nx dev @ai-trend-explorer/web --port=3000
 The frontend will be available at `http://localhost:3000`. It proxies API requests to the API gateway at `http://localhost:3001`.
 
 ### Testing
-</task_progress>
 
 ```bash
 # Run all tests
@@ -173,9 +172,44 @@ cd apps/api-gateway
 npx jest --config jest.config.cts
 ```
 
+### AI Analysis Feature
+
+The AI Analysis feature uses Kafka for asynchronous processing:
+
+1. User visits a trend detail page
+2. Frontend calls `GET /api/trends/:id/analysis`
+3. If no analysis exists, API publishes a message to Kafka and returns `pending`
+4. `AiAnalysisConsumer` processes the message asynchronously
+5. Consumer calls Inference API to generate analysis
+6. Result is saved to PostgreSQL and cached in Redis
+7. Frontend polls every 5 seconds and displays the completed analysis
+
+**API Endpoint:**
+```
+GET /api/trends/:id/analysis
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "trendId": "123",
+    "status": "completed",
+    "summary": "This project is a...",
+    "keyPoints": ["Point 1", "Point 2"],
+    "category": "Dev Tools",
+    "sentiment": "positive",
+    "tags": ["ai", "tools"],
+    "generatedAt": "2026-08-08T10:25:15.787Z"
+  },
+  "timestamp": "2026-08-08T10:25:15.787Z"
+}
+```
+
 ---
 
-## 🗺️ Roadmap
+## �️ Roadmap
 
 | Phase | Feature              | Status     |
 | ----- | -------------------- | ---------- |
@@ -186,8 +220,8 @@ npx jest --config jest.config.cts
 | 5     | Product Hunt         | ⏳ Deferred |
 | 6     | PostgreSQL           | ✅ Complete |
 | 7     | Redis Caching        | ✅ Complete |
-| 8     | AI Analysis          | ⏳ Planned  |
-| 9     | Kafka                | ⏳ Planned  |
+| 8     | AI Analysis          | ✅ Complete |
+| 9     | Kafka                | ✅ Complete |
 | 10    | Microservices        | ⏳ Planned  |
 | 11    | Frontend UI          | ✅ Complete |
 | 12    | Production Deployment| ⏳ Planned  |

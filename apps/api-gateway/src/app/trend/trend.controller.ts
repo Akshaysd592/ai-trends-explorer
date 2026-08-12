@@ -36,6 +36,24 @@ export class TrendController {
     };
   }
 
+  @Get('search')
+  async searchTrends(@Query('q') query: string) {
+    const trends = await this.trendService.searchTrends(query || '');
+    return {
+      success: true,
+      data: trends,
+      query: query || '',
+      total: trends.length,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Get('stats')
+  async getDashboardStats() {
+    const stats = await this.trendService.getDashboardStats();
+    return stats;
+  }
+
   @Get(':id')
   async getTrendById(@Param('id') id: string) {
     const trend = await this.trendService.getTrendById(id);

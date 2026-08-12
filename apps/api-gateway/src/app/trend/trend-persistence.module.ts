@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@ai-trend-explorer/config';
 import { TrendEntity } from './entities/trend.entity';
 import { SourceEntity } from './entities/source.entity';
+import { AnalysisEntity } from '../ai-analysis/entities/analysis.entity';
 import { TrendRepository } from './trend.repository';
 import pg from 'pg';
 
@@ -22,7 +23,7 @@ import pg from 'pg';
           username: db.username,
           password: db.password,
           database: db.name,
-          entities: [TrendEntity, SourceEntity],
+          entities: [TrendEntity, SourceEntity, AnalysisEntity],
           synchronize: true,
           logging: false,
         };
