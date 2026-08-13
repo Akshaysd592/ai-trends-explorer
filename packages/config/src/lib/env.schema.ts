@@ -23,6 +23,16 @@ export const envSchema = z.object({
   REDIS_PORT: z.coerce.number().default(6379),
   REDIS_PASSWORD: z.string().optional(),
   REDIS_CACHE_TTL: z.coerce.number().default(300),
+  REDIS_HISTORICAL_TTL_DAYS: z.coerce.number().default(30),
+  KAFKA_BROKERS: z.string(),
+  KAFKA_CLIENT_ID: z.string(),
+  KAFKA_GROUP_ID: z.string(),
+  KAFKA_TOPIC_ANALYSIS_REQUEST: z.string(),
+  AI_PROVIDER: z.enum(['huggingface', 'openai', 'gemini']),
+  AI_API_URL: z.string().url(),
+  AI_MODEL: z.string(),
+  AI_API_TOKEN: z.string().optional(),
+  AI_REQUEST_TIMEOUT: z.coerce.number(),
 });
 
 export type EnvSchema = z.infer<typeof envSchema>;

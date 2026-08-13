@@ -9,7 +9,7 @@ export default function TrendCard({ trend }: TrendCardProps) {
   const isHuggingFace = trend.source === 'huggingface';
 
   return (
-    <Link href={`/trends/${trend.id}`} className="trend-card-link">
+    <Link href={`/trends/${encodeURIComponent(trend.id)}`} className="trend-card-link">
       <article className={`trend-card trend-card--${trend.source}`}>
         <div className="trend-card__header">
           <div className="trend-card__source">

@@ -9,6 +9,7 @@ import { HealthService } from './health/health.service';
 import { MockTrendSource } from './trend/sources/mock-trend.source';
 import { GithubController } from './github/github.controller';
 import { GithubModule } from './github/github.module';
+import { AiAnalysisModule } from './ai-analysis/ai-analysis.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { GithubModule } from './github/github.module';
     TrendModule,
     HealthModule,
     GithubModule,
+    AiAnalysisModule,
   ],
   controllers: [ HealthController, GithubController],
   providers: [

@@ -3,6 +3,7 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import type {
   TrendsResponse,
   TrendResponse,
+  TrendAnalysisResponse,
   SearchResponse,
   DashboardStats,
   TrendsQuery,
@@ -29,7 +30,19 @@ export async function fetchTrends(query: TrendsQuery = {}): Promise<TrendsRespon
  * Fetch a single trend by ID.
  */
 export async function fetchTrendById(id: string): Promise<TrendResponse> {
-  const response = await axios.get<TrendResponse>(`${API_BASE}/api/trends/${id}`);
+  const response = await axios.get<TrendResponse>(`${API_BASE}/api/trends/${encodeURIComponent(id)}`);
+  return response.data;
+}
+
+/**
+ * Fetch AI analysis for a single trend by ID.
+ * If no analysis exists yet, the API triggers on-demand generation via Kafka
+ * and returns a pending status.
+ */
+export async function fetchTrendAnalysis(id: string): Promise<TrendAnalysisResponse> {
+  const response = await axios.get<TrendAnalysisResponse>(
+    `${API_BASE}/api/trends/${encodeURIComponent(id)}/analysis`,
+  );
   return response.data;
 }
 
@@ -86,6 +99,26 @@ export function useTrend(
     queryKey: ['trend', id],
     queryFn: () => fetchTrendById(id),
     enabled: !!id && options?.enabled !== false,
+    ...options,
+  });
+}
+
+/**
+ * React Query hook for a single trend's AI analysis.
+ * Polls every 5 seconds while the analysis is pending.
+ */
+export function useTrendAnalysis(
+  id: string,
+  options?: Omit<UseQueryOptions<TrendAnalysisResponse>, 'queryKey' | 'queryFn'>,
+) {
+  return useQuery({
+    queryKey: ['trend', id, 'analysis'],
+    queryFn: () => fetchTrendAnalysis(id),
+    enabled: !!id,
+    refetchInterval: (query) => {
+      const status = query.state.data?.data?.status;
+      return status === 'pending' ? 5000 : false;
+    },
     ...options,
   });
 }

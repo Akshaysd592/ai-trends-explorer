@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { id: encodedId } = await params;
     const id = decodeURIComponent(encodedId);
-    const response = await fetch(`${API_GATEWAY_URL}/api/trends/${encodeURIComponent(id)}`, {
+    const response = await fetch(`${API_GATEWAY_URL}/api/trends/${encodeURIComponent(id)}/analysis`, {
       cache: 'no-store',
     });
 
@@ -24,7 +24,7 @@ export async function GET(
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
-      { error: `Failed to fetch trend: ${error instanceof Error ? error.message : String(error)}` },
+      { error: `Failed to fetch trend analysis: ${error instanceof Error ? error.message : String(error)}` },
       { status: 500 },
     );
   }

@@ -1,4 +1,4 @@
-import type { Trend } from '@ai-trend-explorer/shared-types';
+import type { Trend, TrendAnalysis } from '@ai-trend-explorer/shared-types';
 
 export interface SourceStatus {
   status: 'ok' | 'failed';
@@ -21,6 +21,12 @@ export interface TrendsResponse {
 export interface TrendResponse {
   success: boolean;
   data: Trend;
+  timestamp: string;
+}
+
+export interface TrendAnalysisResponse {
+  success: boolean;
+  data: TrendAnalysis;
   timestamp: string;
 }
 

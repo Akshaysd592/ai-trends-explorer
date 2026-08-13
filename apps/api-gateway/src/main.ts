@@ -3,6 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
+// API Gateway entry point
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
@@ -13,8 +14,7 @@ async function bootstrap() {
   logger.info("Bootstarpping API Gateway")
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
-  }
-  );
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
