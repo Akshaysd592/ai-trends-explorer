@@ -38,6 +38,8 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       CLUSTER_ID: ${CLUSTER_ID}
       ALLOW_PLAINTEXT_LISTENER: "yes"
+    ports:
+      - "9092:9092"
     volumes:
       - kafka_data:/var/lib/kafka/data
     restart: unless-stopped

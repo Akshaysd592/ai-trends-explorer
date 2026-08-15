@@ -23,6 +23,12 @@
     },
     {
       "path": "./apps/web"
+    },
+    {
+      "path": "./apps/analysis-service"
+    },
+    {
+      "path": "./apps/trend-service"
     }
   ]
 }

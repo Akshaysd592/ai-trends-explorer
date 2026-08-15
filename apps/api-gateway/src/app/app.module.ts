@@ -1,15 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { HttpModule } from '@nestjs/axios';
 import { envSchema } from '@ai-trend-explorer/config';
+import { ConfigModule as AppConfigModule } from '@ai-trend-explorer/config';
 import { AppLoggerService } from '../logger/app-logger.service';
-import { TrendModule } from './trend/trend.module';
 import { HealthController } from './health/health.controller';
 import { HealthModule } from './health/health.module';
 import { HealthService } from './health/health.service';
-import { MockTrendSource } from './trend/sources/mock-trend.source';
-import { GithubController } from './github/github.controller';
-import { GithubModule } from './github/github.module';
-import { AiAnalysisModule } from './ai-analysis/ai-analysis.module';
+import { TrendProxyController } from './proxy/trend-proxy.controller';
+import { AnalysisProxyController } from './proxy/analysis-proxy.controller';
 
 @Module({
   imports: [
@@ -17,18 +16,14 @@ import { AiAnalysisModule } from './ai-analysis/ai-analysis.module';
       isGlobal: true,
       validate: (env) => envSchema.parse(env),
     }),
-    TrendModule,
+    HttpModule,
     HealthModule,
-    GithubModule,
-    AiAnalysisModule,
+    AppConfigModule,
   ],
-  controllers: [ HealthController, GithubController],
+  controllers: [HealthController, TrendProxyController, AnalysisProxyController],
   providers: [
-    
     AppLoggerService,
     HealthService,
-    MockTrendSource,
-    
   ],
 })
 export class AppModule {}
