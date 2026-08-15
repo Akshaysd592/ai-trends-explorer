@@ -45,6 +45,7 @@ export function configuration() {
       clientId: env.KAFKA_CLIENT_ID,
       groupId: env.KAFKA_GROUP_ID,
       topicAnalysisRequest: env.KAFKA_TOPIC_ANALYSIS_REQUEST,
+      topicTrendDiscovered: env.KAFKA_TOPIC_TREND_DISCOVERED,
     },
     ai: {
       provider: env.AI_PROVIDER,
@@ -52,6 +53,12 @@ export function configuration() {
       model: env.AI_MODEL,
       apiToken: env.AI_API_TOKEN,
       timeout: env.AI_REQUEST_TIMEOUT,
+    },
+    services: {
+      trendServiceUrl: env.TREND_SERVICE_URL,
+      analysisServiceUrl: env.ANALYSIS_SERVICE_URL,
+      trendServicePort: env.TREND_SERVICE_PORT,
+      analysisServicePort: env.ANALYSIS_SERVICE_PORT,
     },
   };
 }

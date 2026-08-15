@@ -28,11 +28,16 @@ export const envSchema = z.object({
   KAFKA_CLIENT_ID: z.string(),
   KAFKA_GROUP_ID: z.string(),
   KAFKA_TOPIC_ANALYSIS_REQUEST: z.string(),
+  KAFKA_TOPIC_TREND_DISCOVERED: z.string(),
   AI_PROVIDER: z.enum(['huggingface', 'openai', 'gemini']),
   AI_API_URL: z.string().url(),
   AI_MODEL: z.string(),
   AI_API_TOKEN: z.string().optional(),
   AI_REQUEST_TIMEOUT: z.coerce.number(),
+  TREND_SERVICE_URL: z.string().url().default('http://localhost:3002'),
+  ANALYSIS_SERVICE_URL: z.string().url().default('http://localhost:3003'),
+  TREND_SERVICE_PORT: z.coerce.number().default(3002),
+  ANALYSIS_SERVICE_PORT: z.coerce.number().default(3003),
 });
 
 export type EnvSchema = z.infer<typeof envSchema>;

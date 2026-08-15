@@ -5,6 +5,8 @@ packages:
   - 'apps/api-gateway-e2e'
   - 'apps/web'
   - 'apps/web-e2e'
+  - 'apps/trend-service'
+  - 'apps/analysis-service'
 allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
