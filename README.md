@@ -55,7 +55,8 @@ A monorepo built with [Nx](https://nx.dev) and [pnpm](https://pnpm.io):
 ai-trend-explorer/
 ├── apps/
 │   ├── web/              # Next.js frontend
-│   └── api-gateway/      # NestJS API gateway
+│   ├── api-gateway/      # NestJS API gateway
+│   └── analysis-service/ # AI Analysis service with Kafka
 ├── packages/
 │   ├── config/           # Environment configuration
 │   ├── logger/           # Structured logging
@@ -73,7 +74,7 @@ HuggingFace ─┤
    Trend Provider Registry
              │
              ▼
-      Trend Aggregation
+       Trend Aggregation
              │
              ▼
         API Gateway
@@ -94,7 +95,7 @@ Each data source implements a common `TrendProvider` interface, ensuring consist
 GET /trends
 ```
 
-| Parameter  | Type   | Default                  | Description                          |
+| Parameter | Type   | Default                  | Description                          |
 | ---------- | ------ | ------------------------ | ------------------------------------ |
 | `page`     | number | `1`                      | Page number for pagination           |
 | `limit`    | number | `20`                     | Results per page (1–100)             |
@@ -185,11 +186,13 @@ The AI Analysis feature uses Kafka for asynchronous processing:
 7. Frontend polls every 5 seconds and displays the completed analysis
 
 **API Endpoint:**
+
 ```
 GET /api/trends/:id/analysis
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -209,7 +212,7 @@ GET /api/trends/:id/analysis
 
 ---
 
-## �️ Roadmap
+## 📅 Roadmap
 
 | Phase | Feature              | Status     |
 | ----- | -------------------- | ---------- |
@@ -230,5 +233,4 @@ GET /api/trends/:id/analysis
 
 ## 📄 License
 
-Akshay Dhobale
-All rights are reserved.
+Akshay Dhobale — All rights are reserved.
